@@ -1,0 +1,20 @@
+# 仮想環境（venv または .venv のいずれか）
+venv/
+.venv/
+
+# データ保管フォルダ
+data/
+
+# Python キャッシュ
+__pycache__/
+*.py[cod]
+
+# Jupyter
+.ipynb_checkpoints/
+
+# VSCode 設定（必要に応じて）
+.vscode/
+
+# OSごとの不要ファイル
+.DS_Store
+Thumbs.db
