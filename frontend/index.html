@@ -9,8 +9,13 @@
   <h1>PoseTrack</h1>
   <p>姿勢をチェックするWebアプリです。</p>
   <button id="startButton">スタート</button>
+  <button id="stopButton">ストップ</button>
   <p id="message"></p>
   <video id="video" width="480" autoplay></video>
+  <canvas id="canvas" width="480" height="360"></canvas>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
