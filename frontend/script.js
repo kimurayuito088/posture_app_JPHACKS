@@ -1,5 +1,6 @@
 const button = document.getElementById("startButton");
 const stopButton = document.getElementById("stopButton");
+const skeletonToggle = document.getElementById("skeletonToggle");
 const message = document.getElementById("message");
 const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");
@@ -27,11 +28,13 @@ function onResults(results) {
   canvasCtx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
 
   if (results.poseLandmarks) {
-    // 骨格の線と点を描画
-    drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS,
-      { color: "#00FF00", lineWidth: 2 });
-    drawLandmarks(canvasCtx, results.poseLandmarks,
-      { color: "#FF0000", lineWidth: 1 });
+    // スイッチがONのときだけ骨格の線と点を描画
+    if (skeletonToggle.checked) {
+      drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS,
+        { color: "#00FF00", lineWidth: 2 });
+      drawLandmarks(canvasCtx, results.poseLandmarks,
+        { color: "#FF0000", lineWidth: 1 });
+    }
 
     // 左肩(11)と右肩(12)を取り出して角度を計算
     const left = results.poseLandmarks[11];
