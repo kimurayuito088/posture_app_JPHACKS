@@ -13,7 +13,8 @@ const angleValue = document.getElementById("angleValue");
 const errorPanel = document.getElementById("errorPanel");
 const errorHelp = document.getElementById("errorHelp");
 
-let camera = null;
+let stream = null;       // カメラの映像ストリーム
+let detecting = false;   // 検出中かどうか
 
 // --- ステータスバーを更新する関数 ---
 function setStatus(type, text) {
@@ -98,6 +99,13 @@ pose.setOptions({
 });
 pose.onResults(onResults);
 
+// --- 1フレームずつMediaPipeに送り続けるループ ---
+async function detectLoop() {
+  if (!detecting) return;
+  await pose.send({ image: video });
+  requestAnimationFrame(detectLoop);  // 次のフレームを予約
+}
+
 // --- スタートボタン ---
 button.addEventListener("click", async function () {
   setStatus("loading", "カメラを起動しています...");
@@ -106,14 +114,17 @@ button.addEventListener("click", async function () {
   angleDisplay.style.display = "flex";
 
   try {
-    camera = new Camera(video, {
-      onFrame: async () => {
-        await pose.send({ image: video });
-      },
-      width: 640,
-      height: 480,
+    // カメラ本来の比率のまま取得（前面カメラを優先）
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "user" },
+      audio: false,
     });
-    await camera.start();
+    video.srcObject = stream;
+    await video.play();
+
+    detecting = true;
+    detectLoop();
+
     button.disabled = true;
     stopButton.disabled = false;
   } catch (error) {
@@ -127,9 +138,10 @@ button.addEventListener("click", async function () {
 
 // --- ストップボタン ---
 stopButton.addEventListener("click", function () {
-  if (camera) {
-    camera.stop();
-    camera = null;
+  detecting = false;
+  if (stream) {
+    stream.getTracks().forEach((track) => track.stop());  // カメラを止める
+    stream = null;
   }
   canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
   setStatus("idle", "停止しました");
