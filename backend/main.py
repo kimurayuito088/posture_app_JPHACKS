@@ -1,49 +1,59 @@
+"""
+PoseTrack バックエンド API
+
+姿勢モニタリングの記録を保存・取得する REST API。
+現在はインメモリ保存（サーバー再起動で消える）。DB 連携は今後実装予定。
+
+起動方法:
+  uvicorn backend.main:app --reload
+
+API ドキュメント:
+  http://localhost:8000/docs
+"""
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from datetime import datetime
 
-# FastAPIアプリ本体を作る
-app = FastAPI()
+app = FastAPI(title="PoseTrack API", version="0.1.0")
 
-# ブラウザ（別の場所で動くフロント）からアクセスを許可する設定
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],      # どこからのアクセスも許可（学習用。本番では絞る）
+    allow_origins=["*"],      # 学習用。本番では許可するオリジンを絞ること
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# --- 受け取るデータの形を定義 ---
-# フロントから送られてくるJSONがこの形かどうかを自動チェックしてくれる
+
 class PostureRecord(BaseModel):
-    good_seconds: float   # 良い姿勢だった秒数
-    bad_seconds: float    # 悪い姿勢だった秒数
+    """フロントエンドから送られる1セッション分の姿勢記録"""
+    good_seconds: float
+    bad_seconds: float
 
 
-# --- データの保存場所（今はメモリ上のリスト。サーバーを止めると消える） ---
-records = []
+# インメモリストア（本番では DB に置き換える）
+records: list[dict] = []
 
 
-# トップにアクセスされたら挨拶を返す
 @app.get("/")
 def read_root():
     return {"message": "PoseTrack API へようこそ"}
 
 
-# --- 姿勢データを受け取って保存する（POST） ---
 @app.post("/records")
 def create_record(record: PostureRecord):
+    """姿勢記録を1件保存する"""
     saved = {
         "good_seconds": record.good_seconds,
         "bad_seconds": record.bad_seconds,
-        "created_at": datetime.now().isoformat(),  # 保存した日時を自動で付ける
+        "created_at": datetime.now().isoformat(),
     }
     records.append(saved)
     return {"message": "保存しました", "record": saved}
 
 
-# --- 保存した記録を一覧で返す（GET） ---
 @app.get("/records")
 def get_records():
+    """保存済みの姿勢記録を全件返す"""
     return {"count": len(records), "records": records}

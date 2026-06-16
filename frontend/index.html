@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div id="alertFlash" class="alert-flash"></div>
   <div class="app-container">
     <!-- ヘッダー -->
     <header>
@@ -45,12 +46,21 @@
     </div>
 
     <!-- オプション -->
-    <div class="options">
-      <label class="toggle-switch">
-        <input type="checkbox" id="skeletonToggle" checked>
-        <span class="slider"></span>
-      </label>
-      <span class="toggle-label">骨格を表示</span>
+    <div class="options-row">
+      <div class="option-item">
+        <label class="toggle-switch">
+          <input type="checkbox" id="skeletonToggle" checked>
+          <span class="slider"></span>
+        </label>
+        <span class="toggle-label">骨格を表示</span>
+      </div>
+      <div class="option-item">
+        <label class="toggle-switch">
+          <input type="checkbox" id="soundToggle" checked>
+          <span class="slider"></span>
+        </label>
+        <span class="toggle-label">警告音</span>
+      </div>
     </div>
 
     <!-- エラーメッセージ（カメラ拒否時など） -->
