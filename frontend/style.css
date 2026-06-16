@@ -178,6 +178,15 @@ h1 {
   background-color: #b91c1c;
 }
 
+.btn-recalib {
+  background-color: #334155;
+  color: #e2e8f0;
+}
+
+.btn-recalib:hover:not(:disabled) {
+  background-color: #475569;
+}
+
 /* --- トグルスイッチ --- */
 .options {
   display: flex;
