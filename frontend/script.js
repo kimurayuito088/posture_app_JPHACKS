@@ -1,15 +1,47 @@
 const button = document.getElementById("startButton");
 const stopButton = document.getElementById("stopButton");
 const skeletonToggle = document.getElementById("skeletonToggle");
-const message = document.getElementById("message");
 const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");
 const canvasCtx = canvas.getContext("2d");
+const placeholder = document.getElementById("placeholder");
+const statusBar = document.getElementById("statusBar");
+const statusIcon = document.getElementById("statusIcon");
+const statusText = document.getElementById("statusText");
+const angleDisplay = document.getElementById("angleDisplay");
+const angleValue = document.getElementById("angleValue");
+const errorPanel = document.getElementById("errorPanel");
+const errorHelp = document.getElementById("errorHelp");
 
-// カメラを入れておく箱（後から作る・止めるので let）
 let camera = null;
 
-// --- 肩の角度を計算する関数（Python版と同じロジック） ---
+// --- ステータスバーを更新する関数 ---
+function setStatus(type, text) {
+  statusBar.className = "status-bar status-" + type;
+  statusText.textContent = text;
+}
+
+// --- カメラエラー時の案内メッセージを生成 ---
+function getCameraErrorHelp(error) {
+  if (error.name === "NotAllowedError") {
+    const isIOS = /iPhone|iPad/.test(navigator.userAgent);
+    const isAndroid = /Android/.test(navigator.userAgent);
+    if (isIOS) {
+      return "iPhoneの「設定」アプリ → お使いのブラウザ（Safari/Chrome）→「カメラ」をオンにしてください。その後、このページを再読み込みしてください。";
+    } else if (isAndroid) {
+      return "ブラウザの設定 →「サイトの設定」→「カメラ」を許可してください。その後、このページを再読み込みしてください。";
+    } else {
+      return "ブラウザのアドレスバー左のアイコンをクリック →「カメラ」を「許可」に変更してください。その後、再読み込みしてください。";
+    }
+  } else if (error.name === "NotFoundError") {
+    return "カメラが見つかりません。カメラが接続されているか確認してください。";
+  } else if (error.name === "NotReadableError") {
+    return "カメラが他のアプリで使用中です。他のアプリを閉じてからもう一度お試しください。";
+  }
+  return "エラー: " + error.message;
+}
+
+// --- 肩の角度を計算する関数 ---
 function calculateShoulderAngle(left, right) {
   const dx = right.x - left.x;
   const dy = right.y - left.y;
@@ -23,40 +55,41 @@ function calculateShoulderAngle(left, right) {
 
 // --- MediaPipeが検出結果を返すたびに呼ばれる関数 ---
 function onResults(results) {
-  // canvasを一度まっさらにして、カメラ映像を描く
+  canvas.width = results.image.width;
+  canvas.height = results.image.height;
+
   canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
   canvasCtx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
 
   if (results.poseLandmarks) {
-    // スイッチがONのときだけ骨格の線と点を描画
     if (skeletonToggle.checked) {
       drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS,
-        { color: "#00FF00", lineWidth: 2 });
+        { color: "rgba(0, 255, 128, 0.6)", lineWidth: 2 });
       drawLandmarks(canvasCtx, results.poseLandmarks,
-        { color: "#FF0000", lineWidth: 1 });
+        { color: "rgba(255, 100, 100, 0.7)", lineWidth: 1, radius: 3 });
     }
 
-    // 左肩(11)と右肩(12)を取り出して角度を計算
     const left = results.poseLandmarks[11];
     const right = results.poseLandmarks[12];
     const angle = calculateShoulderAngle(left, right);
     const angleAbs = Math.abs(angle);
 
-    // 状態に応じてメッセージを変える
+    angleValue.textContent = angle.toFixed(1) + "°";
+
     if (angleAbs > 15) {
       const action = angle > 0 ? "右肩を下げましょう" : "左肩を下げましょう";
-      message.textContent = `肩が傾いています。${action}（${angle.toFixed(1)}°）`;
+      setStatus("bad", "肩が傾いています — " + action);
     } else if (angleAbs < 5) {
-      message.textContent = `良い姿勢です！その調子です！（${angle.toFixed(1)}°）`;
+      setStatus("good", "良い姿勢です！");
     } else {
-      message.textContent = `現在の傾き: ${angle.toFixed(1)}°`;
+      setStatus("warning", "少し傾いています（" + angle.toFixed(1) + "°）");
     }
   }
 }
 
 // --- MediaPipe Pose の準備 ---
 const pose = new Pose({
-  locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`,
+  locateFile: (file) => "https://cdn.jsdelivr.net/npm/@mediapipe/pose/" + file,
 });
 pose.setOptions({
   modelComplexity: 1,
@@ -65,25 +98,43 @@ pose.setOptions({
 });
 pose.onResults(onResults);
 
-// --- ボタンを押したらカメラを起動して検出開始 ---
-button.addEventListener("click", function () {
-  message.textContent = "カメラを起動しています...";
-  camera = new Camera(video, {
-    onFrame: async () => {
-      await pose.send({ image: video });
-    },
-    width: 480,
-    height: 360,
-  });
-  camera.start();
+// --- スタートボタン ---
+button.addEventListener("click", async function () {
+  setStatus("loading", "カメラを起動しています...");
+  errorPanel.style.display = "none";
+  placeholder.style.display = "none";
+  angleDisplay.style.display = "flex";
+
+  try {
+    camera = new Camera(video, {
+      onFrame: async () => {
+        await pose.send({ image: video });
+      },
+      width: 640,
+      height: 480,
+    });
+    await camera.start();
+    button.disabled = true;
+    stopButton.disabled = false;
+  } catch (error) {
+    setStatus("idle", "待機中");
+    placeholder.style.display = "flex";
+    angleDisplay.style.display = "none";
+    errorPanel.style.display = "block";
+    errorHelp.textContent = getCameraErrorHelp(error);
+  }
 });
 
-// --- ストップボタンでカメラを止める ---
+// --- ストップボタン ---
 stopButton.addEventListener("click", function () {
   if (camera) {
     camera.stop();
     camera = null;
   }
   canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-  message.textContent = "停止しました。";
+  setStatus("idle", "停止しました");
+  placeholder.style.display = "flex";
+  angleDisplay.style.display = "none";
+  button.disabled = false;
+  stopButton.disabled = true;
 });

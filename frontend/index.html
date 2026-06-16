@@ -2,21 +2,66 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PoseTrack</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>PoseTrack</h1>
-  <p>姿勢をチェックするWebアプリです。</p>
-  <button id="startButton">スタート</button>
-  <button id="stopButton">ストップ</button>
-  <label class="toggle">
-    <input type="checkbox" id="skeletonToggle" checked>
-    骨格を表示
-  </label>
-  <p id="message"></p>
-  <video id="video" width="480" autoplay></video>
-  <canvas id="canvas" width="480" height="360"></canvas>
+  <div class="app-container">
+    <!-- ヘッダー -->
+    <header>
+      <h1>PoseTrack</h1>
+      <p class="subtitle">リアルタイム姿勢モニタリング</p>
+    </header>
+
+    <!-- ステータス表示 -->
+    <div id="statusBar" class="status-bar status-idle">
+      <span id="statusIcon">&#9679;</span>
+      <span id="statusText">待機中</span>
+    </div>
+
+    <!-- カメラ映像エリア -->
+    <div class="camera-area">
+      <div id="placeholder" class="camera-placeholder">
+        <p>「スタート」を押してカメラを起動</p>
+      </div>
+      <video id="video" autoplay playsinline></video>
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <!-- 角度表示 -->
+    <div id="angleDisplay" class="angle-display" style="display: none;">
+      <span class="angle-label">肩の傾き</span>
+      <span id="angleValue" class="angle-value">0.0°</span>
+    </div>
+
+    <!-- コントロールボタン -->
+    <div class="controls">
+      <button id="startButton" class="btn btn-start">スタート</button>
+      <button id="stopButton" class="btn btn-stop" disabled>ストップ</button>
+    </div>
+
+    <!-- オプション -->
+    <div class="options">
+      <label class="toggle-switch">
+        <input type="checkbox" id="skeletonToggle" checked>
+        <span class="slider"></span>
+      </label>
+      <span class="toggle-label">骨格を表示</span>
+    </div>
+
+    <!-- エラーメッセージ（カメラ拒否時など） -->
+    <div id="errorPanel" class="error-panel" style="display: none;">
+      <p id="errorTitle" class="error-title">カメラにアクセスできません</p>
+      <p id="errorHelp" class="error-help"></p>
+    </div>
+
+    <!-- フッター -->
+    <footer>
+      <p>映像はお使いの端末内でのみ処理され、外部に送信されません。</p>
+    </footer>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
