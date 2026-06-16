@@ -1,19 +1,291 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
-  font-family: sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #0f172a;
+  color: #e2e8f0;
+  min-height: 100vh;
+}
+
+.app-container {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 20px 16px;
+}
+
+/* --- ヘッダー --- */
+header {
   text-align: center;
-  background-color: #f0f4f8;
-  color: #333;
+  margin-bottom: 20px;
 }
 
 h1 {
-  color: #2c7be5;
-  margin-top: 40px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #38bdf8;
+  letter-spacing: 2px;
 }
 
-p {
-  font-size: 18px;
+.subtitle {
+  font-size: 14px;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+/* --- ステータスバー --- */
+.status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.status-idle {
+  background-color: #1e293b;
+  color: #94a3b8;
+}
+
+.status-good {
+  background-color: #064e3b;
+  color: #34d399;
+}
+
+.status-warning {
+  background-color: #78350f;
+  color: #fbbf24;
+}
+
+.status-bad {
+  background-color: #7f1d1d;
+  color: #f87171;
+}
+
+.status-loading {
+  background-color: #1e3a5f;
+  color: #60a5fa;
+}
+
+/* --- カメラ映像エリア --- */
+.camera-area {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background-color: #1e293b;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.camera-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  font-size: 16px;
 }
 
 #video {
   display: none;
+}
+
+#canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* --- 角度表示 --- */
+.angle-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px;
+  background-color: #1e293b;
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+
+.angle-label {
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+.angle-value {
+  font-size: 32px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #f1f5f9;
+}
+
+/* --- コントロールボタン --- */
+.controls {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.btn {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-start {
+  background-color: #2563eb;
+  color: white;
+}
+
+.btn-start:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.btn-stop {
+  background-color: #dc2626;
+  color: white;
+}
+
+.btn-stop:hover:not(:disabled) {
+  background-color: #b91c1c;
+}
+
+/* --- トグルスイッチ --- */
+.options {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.toggle-switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #475569;
+  border-radius: 24px;
+  transition: background-color 0.2s;
+}
+
+.slider::before {
+  content: "";
+  position: absolute;
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+.toggle-switch input:checked + .slider {
+  background-color: #2563eb;
+}
+
+.toggle-switch input:checked + .slider::before {
+  transform: translateX(20px);
+}
+
+.toggle-label {
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+/* --- エラーパネル --- */
+.error-panel {
+  background-color: #451a03;
+  border: 1px solid #92400e;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.error-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fbbf24;
+  margin-bottom: 8px;
+}
+
+.error-help {
+  font-size: 14px;
+  color: #fde68a;
+  line-height: 1.6;
+}
+
+/* --- フッター --- */
+footer {
+  text-align: center;
+  padding-top: 8px;
+  border-top: 1px solid #1e293b;
+}
+
+footer p {
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* --- スマホ対応 --- */
+@media (max-width: 480px) {
+  .app-container {
+    padding: 12px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  .angle-value {
+    font-size: 28px;
+  }
+
+  .btn {
+    padding: 12px;
+    font-size: 15px;
+  }
 }
