@@ -54,7 +54,9 @@ let lastAlertTime = 0;          // 最後に警告音を鳴らした時刻
 let audioCtx = null;            // Web Audio API コンテキスト（初回使用時に初期化）
 
 // --- セッション記録 ---
-const API_BASE = "http://localhost:8000";  // FastAPI のアドレス
+const API_BASE = location.hostname === "localhost" || location.hostname === "127.0.0.1" || location.protocol === "file:"
+  ? "http://localhost:8000"
+  : "https://posetrack-api.onrender.com";
 let sessionGoodMs = 0;          // このセッションで良い姿勢だったミリ秒
 let sessionBadMs = 0;           // このセッションで悪い姿勢だったミリ秒
 let lastFrameTime = 0;          // 前回フレームの時刻（フレーム間の経過時間を計測）
