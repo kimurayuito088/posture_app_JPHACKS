@@ -19,6 +19,9 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
+# 環境変数（APIキー等。絶対にgitにあげないこと）
+.env
+
 # データベース
 *.db
 

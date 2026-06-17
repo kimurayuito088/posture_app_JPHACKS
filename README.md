@@ -2,6 +2,18 @@
 
 [![IMAGE ALT TEXT HERE](https://jphacks.com/wp-content/uploads/2025/05/JPHACKS2025_ogp.jpg)](https://www.youtube.com/watch?v=lA9EluZugD8)
 
+## 今すぐ使う
+
+**PC:** [https://kimurayuito088.github.io/posture_app_JPHACKS/](https://kimurayuito088.github.io/posture_app_JPHACKS/)
+
+**スマホ:** 下のQRコードを読み取ってください
+
+<img src="docs/qr.png" alt="QRコード" width="200">
+
+> インストール不要 — ブラウザでURLを開くだけで使えます（PC・スマホ対応）
+
+---
+
 ## 製品概要
 ### 背景(製品開発のきっかけ、課題等）
 現代のデスクワーク環境下で長時間の座位姿勢は、肩こり・腰痛・集中力低下など身体だけでなく心の健康にも深刻な影響を及ぼす。既存の姿勢改善ツールは普及が限定的で、利用者の実態に十分に即していない。私たちは「身体・心のさらなるWell-being」に貢献し、「明日の世界を元気にする」という使命感のもと、この社会課題の解決に挑戦した。
@@ -38,7 +50,8 @@ PoseTrackは、PCのWebカメラを活用した革新的なリアルタイム姿
 | フロントエンド | HTML / CSS / JavaScript | UI・カメラ制御・姿勢判定 |
 | 姿勢検出 | [MediaPipe Pose](https://google.github.io/mediapipe/solutions/pose.html)（CDN） | 33点の体のランドマークをリアルタイム検出 |
 | 警告音 | Web Audio API | 外部ファイル不要でブラウザ内で音を生成 |
-| バックエンド（開発中） | FastAPI + Uvicorn | 姿勢記録の保存・取得 REST API |
+| バックエンド | FastAPI + Uvicorn + SQLite | 姿勢記録の保存・取得 REST API |
+| PWA | Service Worker + Manifest | オフライン対応・ホーム画面追加 |
 
 ### ディレクトリ構成
 
@@ -47,9 +60,13 @@ posture_app/
 ├── frontend/               # ★ メインのWebアプリ（ブラウザで動作）
 │   ├── index.html          #   ページ構造（ボタン・カメラ・トグル等）
 │   ├── style.css           #   スタイル（ダークテーマ・レスポンシブ対応）
-│   └── script.js           #   中核ロジック（検出・判定・アラート）
-├── backend/                # バックエンド API（開発中）
-│   └── main.py             #   FastAPI エンドポイント定義
+│   ├── script.js           #   中核ロジック（検出・判定・アラート・履歴）
+│   ├── manifest.json       #   PWA マニフェスト
+│   ├── sw.js               #   Service Worker（オフラインキャッシュ）
+│   └── icons/              #   PWA アイコン（192px / 512px）
+├── backend/                # バックエンド API
+│   ├── main.py             #   FastAPI エンドポイント定義
+│   └── .env                #   環境変数（APIキー等。git管理外）
 ├── my_mediapipe/           # JPHACKSハッカソン版（Python + OpenCV、参考用）
 │   └── detector.py
 ├── app.py                  # Streamlit版（参考用）
@@ -131,7 +148,8 @@ Canvas に `translate + scale(-1, 1)` で左右反転して描画している。
 
 ### 今後の開発予定
 
-- [ ] セッション記録機能（フロント → FastAPI → DB）
+- [x] セッション記録機能（フロント → FastAPI → SQLite）
+- [x] セッション履歴の表示（バーチャート + リスト）
+- [x] PWA 化（オフライン対応・ホーム画面追加）
 - [ ] Gemini API による AI 姿勢コーチング（API キーはバックエンド経由。フロントに置かないこと）
-- [ ] PWA 化（オフライン対応・ホーム画面追加）
 - [ ] GitHub Pages デプロイ
