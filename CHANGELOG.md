@@ -161,7 +161,32 @@
 
 ---
 
-### 12. 開発プロセスの整備
+### 12. Gemini API による AI 姿勢コーチング
+
+**なぜ:** スコアだけでは具体的に何を改善すればよいか分からない。セッションデータをもとにAIが個別のアドバイスを生成することで、より実践的な改善につなげたい。
+
+**やったこと:**
+- FastAPI に `/coach` エンドポイントを追加し、Gemini API（`gemini-3.5-flash`）を呼び出す
+- セッションのスコア・時間・検出された問題（前のめり・猫背・頭の傾き・肩の傾き）をプロンプトに含める
+- APIキーはバックエンドの環境変数で管理（フロントには露出させない）
+- 新しい `google-genai` SDK（認可キー対応）を使用
+
+---
+
+### 13. GitHub Pages + Render デプロイ
+
+**なぜ:** ローカルでしか使えないツールでは、他の人に試してもらえない。URLを共有するだけで誰でも使えるようにしたい。
+
+**やったこと:**
+- フロントエンドを GitHub Pages にデプロイ（`docs/` フォルダから配信）
+- バックエンド（FastAPI）を Render にデプロイ（無料枠）
+- フロントエンドの API 接続先を環境に応じて自動切替（ローカル → localhost、本番 → Render）
+- README に公開URLとQRコードを追加
+- Render の環境変数で Gemini API キーを安全に管理
+
+---
+
+### 14. 開発プロセスの整備
 
 | 実践した項目 | 内容 |
 |---|---|
@@ -182,7 +207,9 @@
 | 警告音生成 | Web Audio API |
 | 描画 | Canvas API |
 | バックエンド | Python, FastAPI, Uvicorn, Pydantic, SQLite |
+| AI コーチング | Gemini API (gemini-3.5-flash), google-genai SDK |
 | PWA | Service Worker, Web App Manifest |
+| デプロイ | GitHub Pages (フロント), Render (バックエンド) |
 | バージョン管理 | Git, GitHub (PR ベースの開発) |
 
 ---
@@ -192,5 +219,6 @@
 - [x] セッション記録のフロント→API→DB連携
 - [x] セッション履歴の表示（バーチャート + リスト）
 - [x] PWA 化（ホーム画面追加・オフライン対応）
-- [ ] Gemini API を使った AI 姿勢コーチング
-- [ ] GitHub Pages へのデプロイ
+- [x] Gemini API を使った AI 姿勢コーチング
+- [x] GitHub Pages へのデプロイ
+- [x] Render にバックエンドをデプロイ（誰でもAIコーチングが利用可能に）
