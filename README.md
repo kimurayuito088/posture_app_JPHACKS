@@ -151,5 +151,5 @@ Canvas に `translate + scale(-1, 1)` で左右反転して描画している。
 - [x] セッション記録機能（フロント → FastAPI → SQLite）
 - [x] セッション履歴の表示（バーチャート + リスト）
 - [x] PWA 化（オフライン対応・ホーム画面追加）
-- [ ] Gemini API による AI 姿勢コーチング（API キーはバックエンド経由。フロントに置かないこと）
-- [ ] GitHub Pages デプロイ
+- [x] Gemini API による AI 姿勢コーチング（バックエンド経由）
+- [x] GitHub Pages + Render デプロイ
