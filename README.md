@@ -19,7 +19,7 @@
 
 ## 今すぐ使う
 
-**PC:** [https://kimurayuito088.github.io/posture_app_JPHACKS/](https://kimurayuito088.github.io/posture_app_JPHACKS/)
+**PC（推奨）:** [https://kimurayuito088.github.io/posture_app_JPHACKS/](https://kimurayuito088.github.io/posture_app_JPHACKS/)
 
 **スマホ:** 下のQRコードを読み取ってください
 
