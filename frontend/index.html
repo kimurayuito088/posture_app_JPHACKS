@@ -63,6 +63,27 @@
       </div>
     </div>
 
+    <!-- セッション結果パネル -->
+    <div id="sessionPanel" class="session-panel" style="display: none;">
+      <h2 class="session-title">セッション結果</h2>
+      <div class="session-score" id="sessionScore">0点</div>
+      <div class="session-stats">
+        <div class="stat-item">
+          <span class="stat-label">良い姿勢</span>
+          <span class="stat-value stat-good" id="sessionGood">0秒</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">悪い姿勢</span>
+          <span class="stat-value stat-bad" id="sessionBad">0秒</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">合計時間</span>
+          <span class="stat-value" id="sessionTotal">0秒</span>
+        </div>
+      </div>
+      <p class="session-msg" id="sessionMsg"></p>
+    </div>
+
     <!-- エラーメッセージ（カメラ拒否時など） -->
     <div id="errorPanel" class="error-panel" style="display: none;">
       <p id="errorTitle" class="error-title">カメラにアクセスできません</p>
