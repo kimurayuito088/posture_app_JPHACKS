@@ -18,3 +18,9 @@ __pycache__/
 # OSごとの不要ファイル
 .DS_Store
 Thumbs.db
+
+# データベース
+*.db
+
+# 個人用ドキュメント（gitにあげない）
+*PORTFOLIO*
