@@ -12,6 +12,7 @@ API ドキュメント:
 """
 
 import os
+import time
 import sqlite3
 from pathlib import Path
 from fastapi import FastAPI
@@ -166,11 +167,22 @@ def get_coaching(req: CoachRequest):
 - 励ましの言葉を最後に一言添える
 - 200文字以内で簡潔に"""
 
-    try:
-        response = gemini_client.models.generate_content(
-            model="gemini-3.5-flash",
-            contents=prompt,
-        )
-        return {"advice": response.text, "score": score}
-    except Exception as e:
-        return {"advice": f"AIコーチングの取得に失敗しました: {str(e)}", "score": score}
+    # 503（混雑）は一時的なので、少し待って最大3回まで再試行する
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            response = gemini_client.models.generate_content(
+                model="gemini-3.1-flash-lite",
+                contents=prompt,
+            )
+            return {"advice": response.text, "score": score}
+        except Exception as e:
+            is_busy = "503" in str(e) or "UNAVAILABLE" in str(e)
+            # 混雑エラーで、まだ試行回数が残っていれば待って再試行（1秒→2秒）
+            if is_busy and attempt < max_retries - 1:
+                time.sleep(2 ** attempt)
+                continue
+            # 3回試してもダメ、または混雑以外のエラー
+            if is_busy:
+                return {"advice": "現在AIが混雑しています。少し待ってもう一度お試しください。", "score": score}
+            return {"advice": f"AIコーチングの取得に失敗しました: {str(e)}", "score": score}
